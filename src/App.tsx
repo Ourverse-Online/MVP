@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  User, Settings, Bot, Zap, Plus, Check, X, Star, Globe, MessageSquare, 
-  Webhook, Key, Sparkles, Trophy, Target, Calendar, BarChart3, Users, 
-  Camera, Gamepad2, Medal, TrendingUp, Heart, Eye, Share2, MapPin,
-  Clock, Award, Activity, Flame, Shield, Brain, Handshake, Lightbulb,
-  RefreshCw, Download, Copy, Wand2, Save, Link, Linkedin, Twitter,
-  Github, Instagram, Youtube, Twitch, Facebook, ChevronRight, ExternalLink,
-  CheckCircle, AlertCircle, Loader2, ArrowRight, Cpu, Database, Cloud, Hash
+  User, Settings, Bot, Zap, Plus, Check, X, MessageSquare, 
+  Webhook, Target, Calendar, BarChart3, Users, 
+  Eye, MapPin,
+  Award, Activity, Flame, Brain, Lightbulb,
+  Wand2, Twitter,
+  CheckCircle, Loader2, ArrowRight, Database, Hash
 } from 'lucide-react';
 
 const OurverseMVP = () => {
   const [activeTab, setActiveTab] = useState('profile');
-  const [selectedBadgeCategory, setSelectedBadgeCategory] = useState(null);
+  const [selectedBadgeCategory, setSelectedBadgeCategory] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
-  const [workflows, setWorkflows] = useState([]);
+  const [workflows, setWorkflows] = useState<any[]>([]);
   const [profileCompleteness, setProfileCompleteness] = useState(73);
   const [selectedGoalCategory, setSelectedGoalCategory] = useState('active');
   const [showGoalModal, setShowGoalModal] = useState(false);
-  const [activityData, setActivityData] = useState([]);
+  const [activityData, setActivityData] = useState<any[]>([]);
   
   // User profile data combining both identity and achievements
   const [profileData, setProfileData] = useState({
@@ -287,7 +286,7 @@ const OurverseMVP = () => {
     }, 2500);
   };
 
-  const connectService = (service) => {
+  const connectService = (service: string) => {
     // Simulate connection process
     setConnectedServices(prev => ({
       ...prev,
@@ -299,7 +298,7 @@ const OurverseMVP = () => {
     }));
   };
 
-  const createGoal = (goalData) => {
+  const createGoal = (goalData: any) => {
     const newGoal = {
       id: Date.now(),
       ...goalData,
@@ -315,7 +314,7 @@ const OurverseMVP = () => {
     setShowGoalModal(false);
   };
 
-  const getPriorityColor = (priority) => {
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'text-red-400 bg-red-500/20 border-red-500/30';
       case 'medium': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30';
@@ -324,7 +323,7 @@ const OurverseMVP = () => {
     }
   };
 
-  const getCategoryColor = (category) => {
+  const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Learning': return 'text-blue-400 bg-blue-500/20';
       case 'Career': return 'text-purple-400 bg-purple-500/20';
@@ -334,7 +333,7 @@ const OurverseMVP = () => {
     }
   };
 
-  const getBadgeColorClasses = (color) => {
+  const getBadgeColorClasses = (color: string) => {
     const colorMap = {
       red: {
         bg: 'bg-red-500/20',
@@ -1156,7 +1155,7 @@ const OurverseMVP = () => {
           </div>
         </div>
       )}
-    </div>
+
       {/* Goal Creation Modal */}
       {showGoalModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -1250,6 +1249,7 @@ const OurverseMVP = () => {
           </div>
         </div>
       )}
+    </div>
   );
 };
 
