@@ -723,6 +723,98 @@ const OurverseMVP = () => {
           </div>
         </div>
       </div>
+{/* AI Cross-Platform Preferences */}
+         <div className="bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700/50">
+           <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+             <Webhook className="w-6 h-6 mr-3 text-purple-400" />
+             AI Cross-Platform Preferences
+           </h3>
+           <p className="text-gray-400 mb-4">These settings are used across all your connected platforms for consistent AI interactions.</p>
+           
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div>
+               <label className="block text-sm text-purple-300 mb-2">Preferred Tone</label>
+               <select className="w-full bg-gray-800/70 border border-gray-600/50 rounded-lg px-4 py-2 text-white">
+                 <option selected={profileData.aiPreferences.tone === 'casual'}>Casual</option>
+                 <option selected={profileData.aiPreferences.tone === 'professional'}>Professional</option>
+                 <option selected={profileData.aiPreferences.tone === 'friendly'}>Friendly</option>
+                 <option selected={profileData.aiPreferences.tone === 'technical'}>Technical</option>
+               </select>
+             </div>
+             <div>
+               <label className="block text-sm text-purple-300 mb-2">Language</label>
+               <select className="w-full bg-gray-800/70 border border-gray-600/50 rounded-lg px-4 py-2 text-white">
+                 <option value="en" selected={profileData.aiPreferences.language === 'en'}>English</option>
+                 <option value="es">Spanish</option>
+                 <option value="fr">French</option>
+                 <option value="de">German</option>
+                 <option value="zh">Chinese</option>
+               </select>
+             </div>
+             <div>
+               <label className="block text-sm text-purple-300 mb-2">Response Length</label>
+               <select className="w-full bg-gray-800/70 border border-gray-600/50 rounded-lg px-4 py-2 text-white">
+                 <option selected={profileData.aiPreferences.responseLength === 'concise'}>Concise</option>
+                 <option selected={profileData.aiPreferences.responseLength === 'moderate'}>Moderate</option>
+                 <option selected={profileData.aiPreferences.responseLength === 'detailed'}>Detailed</option>
+               </select>
+             </div>
+             <div>
+               <label className="block text-sm text-purple-300 mb-2">AI Persona</label>
+               <select className="w-full bg-gray-800/70 border border-gray-600/50 rounded-lg px-4 py-2 text-white">
+                 <option selected={profileData.aiPreferences.persona === 'friendly'}>Friendly Assistant</option>
+                 <option selected={profileData.aiPreferences.persona === 'expert'}>Expert Advisor</option>
+                 <option selected={profileData.aiPreferences.persona === 'creative'}>Creative Partner</option>
+                 <option selected={profileData.aiPreferences.persona === 'mentor'}>Mentor</option>
+               </select>
+             </div>
+           </div>
+           
+           <div className="mt-4">
+             <label className="block text-sm text-purple-300 mb-2">Preferred Topics</label>
+             <div className="flex flex-wrap gap-2">
+               {profileData.aiPreferences.topics && profileData.aiPreferences.topics.map((topic, idx) => (
+                 <span key={idx} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm border border-purple-500/30">
+                   {topic}
+                 </span>
+               ))}
+               <button className="px-3 py-1 border border-dashed border-purple-500/50 text-purple-400 rounded-full text-sm hover:bg-purple-500/10">
+                 <Plus className="w-3 h-3 inline mr-1" />
+                 Add
+               </button>
+             </div>
+           </div>
+         </div>
+
+         {/* Skills & Expertise */}
+         <div className="bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700/50">
+           <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+             <Award className="w-6 h-6 mr-3 text-yellow-400" />
+             Skills & Expertise
+           </h3>
+           
+           <div className="space-y-4">
+             {profileData.skills && profileData.skills.map((skill, idx) => (
+               <div key={idx} className="space-y-1">
+                 <div className="flex justify-between">
+                   <span className="text-white">{skill.name}</span>
+                   <span className="text-yellow-400">{skill.level}%</span>
+                 </div>
+                 <div className="w-full bg-gray-800/70 rounded-full h-2">
+                   <div 
+                     className="bg-gradient-to-r from-yellow-500 to-yellow-300 h-2 rounded-full" 
+                     style={{ width: `${skill.level}%` }}
+                   ></div>
+                 </div>
+               </div>
+             ))}
+             
+             <button className="mt-4 w-full py-2 border border-dashed border-yellow-500/50 text-yellow-400 rounded-lg text-sm hover:bg-yellow-500/10 flex items-center justify-center">
+               <Plus className="w-4 h-4 mr-2" />
+               Add New Skill
+             </button>
+           </div>
+         </div>    </div>
     </div>
   );
 
@@ -1127,130 +1219,491 @@ const OurverseMVP = () => {
   );
 
   // Integrations View
-  const IntegrationsView = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">Connected Services</h2>
-        <p className="text-gray-400">Your unified profile powers AI across all platforms</p>
-      </div>
-
-      <div className="grid gap-4">
-        {Object.entries(connectedServices).map(([key, service]) => (
-          <div 
-            key={key}
-            className={`bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border transition-all ${
-              service.connected ? 'border-green-500/30' : 'border-gray-700/50'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  service.connected ? 'bg-green-500/20' : 'bg-gray-700/50'
-                }`}>
-                  {key === 'openai' && <Bot className="w-6 h-6 text-green-400" />}
-                  {key === 'discord' && <MessageSquare className="w-6 h-6 text-indigo-400" />}
-                  {key === 'slack' && <Hash className="w-6 h-6 text-purple-400" />}
-                  {key === 'notion' && <Database className="w-6 h-6 text-gray-400" />}
-                  {key === 'whatsapp' && <MessageSquare className="w-6 h-6 text-green-400" />}
-                  {key === 'twitter' && <Twitter className="w-6 h-6 text-blue-400" />}
-                </div>
-                
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white capitalize">{key}</h3>
-                  <p className="text-sm text-gray-400">{service.usage}</p>
-                  {service.connected && (
-                    <p className="text-xs text-green-400 mt-1">Last sync: {service.lastSync}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3">
-                {service.connected ? (
-                  <>
-                    <CheckCircle className="w-5 h-5 text-green-400" />
-                    <button className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors">
-                      Disconnect
-                    </button>
-                  </>
-                ) : (
-                  <button 
-                    onClick={() => connectService(key)}
-                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                  >
-                    Connect
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Add Workflow Button */}
-      <div className="flex justify-center mt-8">
-        <button 
-          onClick={() => setShowWorkflowModal(true)}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all flex items-center space-x-2"
-        >
-          <Zap className="w-5 h-5" />
-          <span>Create Automation Workflow</span>
-        </button>
-      </div>
-    </div>
-  );
-
+const IntegrationsView = () => {
+       const [showConfigModal, setShowConfigModal] = useState(false);
+       const [selectedService, setSelectedService] = useState(null);
+       
+       const openConfigModal = (serviceKey) => {
+         setSelectedService(serviceKey);
+         setShowConfigModal(true);
+       };
+       
+       return (
+       <div className="space-y-6">
+         <div className="text-center mb-8">
+           <h2 className="text-3xl font-bold text-white mb-2">Connected Services</h2>
+           <p className="text-gray-400">Your unified profile powers AI across all platforms</p>
+         </div>
+ 
+         {/* Integration Categories */}
+         <div className="flex space-x-1 bg-gray-900/50 backdrop-blur-sm rounded-xl p-1 mb-6 border border-gray-700/50">
+           {[
+             { id: 'all', label: 'All Services' },
+             { id: 'connected', label: 'Connected' },
+             { id: 'available', label: 'Available' }
+           ].map(category => (
+             <button
+               key={category.id}
+               className={`flex-1 py-2 px-4 rounded-lg text-center transition-colors ${
+                 category.id === 'all' 
+                   ? 'bg-purple-600 text-white' 
+                   : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+               }`}
+             >
+               {category.label}
+             </button>
+           ))}
+         </div>
+ 
+         <div className="grid gap-4">
+           {Object.entries(connectedServices).map(([key, service]) => (
+             <div 
+               key={key}
+               className={`bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border transition-all ${
+                 service.connected ? 'border-green-500/30' : 'border-gray-700/50'
+               }`}
+             >
+               <div className="flex items-center justify-between">
+                 <div className="flex items-center space-x-4">
+                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                     service.connected ? 'bg-green-500/20' : 'bg-gray-700/50'
+                   }`}>
+                     {key === 'openai' && <Bot className="w-6 h-6 text-green-400" />}
+                     {key === 'discord' && <MessageSquare className="w-6 h-6 text-indigo-400" />}
+                     {key === 'slack' && <Hash className="w-6 h-6 text-purple-400" />}
+                     {key === 'notion' && <Database className="w-6 h-6 text-gray-400" />}
+                     {key === 'whatsapp' && <MessageSquare className="w-6 h-6 text-green-400" />}
+                     {key === 'twitter' && <Twitter className="w-6 h-6 text-blue-400" />}
+                     {key === 'google' && <User className="w-6 h-6 text-red-400" />}
+                   </div>
+                   
+                   <div className="flex-1">
+                     <h3 className="text-lg font-semibold text-white capitalize">{key}</h3>
+                     <p className="text-sm text-gray-400">{service.usage}</p>
+                     {service.connected && (
+                       <p className="text-xs text-green-400 mt-1">Last sync: {service.lastSync}</p>
+                     )}
+                   </div>
+                 </div>
+ 
+                 <div className="flex items-center space-x-3">
+                   {service.connected ? (
+                     <>
+                       <button 
+                         onClick={() => openConfigModal(key)}
+                         className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+                       >
+                         Configure
+                       </button>
+                       <button className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors">
+                         Disconnect
+                       </button>
+                     </>
+                   ) : (
+                     <button 
+                       onClick={() => connectService(key)}
+                       className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                     >
+                       Connect
+                     </button>
+                   )}
+                 </div>
+               </div>
+               
+               {/* Service Details (expandable) */}
+               {service.connected && (
+                 <div className="mt-4 pt-4 border-t border-gray-700/50">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                       <h4 className="text-sm font-semibold text-gray-300 mb-2">Integration Status</h4>
+                       <div className="flex items-center space-x-2">
+                         <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                         <span className="text-sm text-gray-400">Active and working properly</span>
+                       </div>
+                     </div>
+                     
+                     <div>
+                       <h4 className="text-sm font-semibold text-gray-300 mb-2">Connected Features</h4>
+                       <div className="flex flex-wrap gap-2">
+                         {key === 'openai' && (
+                           <>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">AI Chat</span>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">Profile Enhancement</span>
+                           </>
+                         )}
+                         {key === 'discord' && (
+                           <>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">Notifications</span>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">Chat Bot</span>
+                           </>
+                         )}
+                         {key === 'slack' && (
+                           <>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">Team Updates</span>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">Workflow Triggers</span>
+                           </>
+                         )}
+                         {key === 'twitter' && (
+                           <>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">Profile Sync</span>
+                             <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded text-xs">Auto-posting</span>
+                           </>
+                         )}
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               )}
+             </div>
+           ))}
+         </div>
+ 
+         {/* Add New Integration Button */}
+         <div className="flex justify-center mt-8">
+           <button 
+             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all flex items-center space-x-2"
+           >
+             <Plus className="w-5 h-5" />
+             <span>Add New Integration</span>
+           </button>
+         </div>
+         
+         {/* Integration Configuration Modal */}
+         {showConfigModal && selectedService && (
+           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+             <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md">
+               <div className="flex justify-between items-center mb-4">
+                 <h3 className="text-xl font-bold text-white capitalize">{selectedService} Configuration</h3>
+                 <button 
+                   onClick={() => setShowConfigModal(false)}
+                   className="text-gray-400 hover:text-white"
+                 >
+                   <X className="w-5 h-5" />
+                 </button>
+               </div>
+               
+               <div className="space-y-4">
+                 {selectedService === 'openai' && (
+                   <>
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">API Key</label>
+                       <input 
+                         type="password" 
+                         value={connectedServices.openai.apiKey} 
+                         className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white"
+                         placeholder="sk-..." 
+                       />
+                       <p className="text-xs text-gray-500 mt-1">Your API key is stored securely</p>
+                     </div>
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">Default Model</label>
+                       <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                         <option>GPT-4</option>
+                         <option>GPT-3.5 Turbo</option>
+                         <option>Claude 3</option>
+                       </select>
+                     </div>
+                   </>
+                 )}
+                 
+                 {selectedService === 'discord' && (
+                   <>
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">Webhook URL</label>
+                       <input 
+                         type="text" 
+                         value={connectedServices.discord.webhook} 
+                         className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white"
+                         placeholder="https://discord.com/api/webhooks/..." 
+                       />
+                     </div>
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">Default Channel</label>
+                       <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                         <option>general</option>
+                         <option>announcements</option>
+                         <option>ai-chat</option>
+                       </select>
+                     </div>
+                   </>
+                 )}
+                 
+                 <div className="flex justify-end space-x-3 mt-6">
+                   <button 
+                     onClick={() => setShowConfigModal(false)}
+                     className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700"
+                   >
+                     Cancel
+                   </button>
+                   <button 
+                     className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                   >
+                     Save Changes
+                   </button>
+                 </div>
+               </div>
+             </div>
+           </div>
+         )}
+ 
+         {/* Add Workflow Button */}
+         <div className="flex justify-center mt-8">
+           <button 
+             onClick={() => setShowWorkflowModal(true)}
+             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all flex items-center space-x-2"
+           >
+             <Zap className="w-5 h-5" />
+             <span>Create Automation Workflow</span>
+           </button>
+         </div>
+       </div>
+       );
+     };
   // Workflows View
-  const WorkflowsView = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">Automation Workflows</h2>
-        <p className="text-gray-400">Connect your services with intelligent automation</p>
-      </div>
+const WorkflowsView = () => {
+       const [showWorkflowEditor, setShowWorkflowEditor] = useState(false);
+       const [editingWorkflow, setEditingWorkflow] = useState(null);
+       const [workflowFilter, setWorkflowFilter] = useState('all');
+       
+       const editWorkflow = (workflow) => {
+         setEditingWorkflow(workflow);
+         setShowWorkflowEditor(true);
+       };
+       
+       const createNewWorkflow = () => {
+         setEditingWorkflow({
+           id: Date.now(),
+           name: "New Workflow",
+           trigger: { service: "", event: "" },
+           action: { service: "", type: "" },
+           active: true,
+           executions: 0
+         });
+         setShowWorkflowEditor(true);
+       };
+       
+       const toggleWorkflowStatus = (id) => {
+         setWorkflows(workflows.map(w => 
+           w.id === id ? {...w, active: !w.active} : w
+         ));
+       };
+       
+       const filteredWorkflows = workflowFilter === 'all' 
+         ? workflows 
+         : workflows.filter(w => workflowFilter === 'active' ? w.active : !w.active);
+       
+       return (
+       <div className="space-y-6">
+         <div className="text-center mb-8">
+           <h2 className="text-3xl font-bold text-white mb-2">Automation Workflows</h2>
+           <p className="text-gray-400">Connect your services with intelligent automation</p>
+         </div>
+         
+         {/* Workflow Filters */}
+         <div className="flex space-x-1 bg-gray-900/50 backdrop-blur-sm rounded-xl p-1 mb-6 border border-gray-700/50">
+           {[
+             { id: 'all', label: 'All Workflows' },
+             { id: 'active', label: 'Active' },
+             { id: 'inactive', label: 'Inactive' }
+           ].map(filter => (
+             <button
+               key={filter.id}
+               onClick={() => setWorkflowFilter(filter.id)}
+               className={`flex-1 py-2 px-4 rounded-lg text-center transition-colors ${
+                 filter.id === workflowFilter 
+                   ? 'bg-purple-600 text-white' 
+                   : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+               }`}
+             >
+               {filter.label}
+             </button>
+           ))}
+         </div>
 
-      <div className="grid gap-4">
-        {workflows.map(workflow => (
-          <div key={workflow.id} className="bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700/50">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">{workflow.name}</h3>
-              <div className="flex items-center space-x-3">
-                <span className="text-sm text-gray-400">{workflow.executions} runs</span>
-                <button className={`w-12 h-6 rounded-full relative transition-colors ${
-                  workflow.active ? 'bg-green-500' : 'bg-gray-600'
-                }`}>
-                  <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
-                    workflow.active ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex-1 bg-gray-800/50 rounded-lg p-3">
-                <div className="text-xs text-gray-400 mb-1">TRIGGER</div>
-                <div className="text-white">{workflow.trigger.service}</div>
-                <div className="text-sm text-gray-400">{workflow.trigger.event}</div>
-              </div>
-              
-              <ArrowRight className="w-5 h-5 text-purple-400" />
-              
-              <div className="flex-1 bg-gray-800/50 rounded-lg p-3">
-                <div className="text-xs text-gray-400 mb-1">ACTION</div>
-                <div className="text-white">{workflow.action.service}</div>
-                <div className="text-sm text-gray-400">{workflow.action.type}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+         <div className="grid gap-4">
+           {filteredWorkflows.map(workflow => (
+             <div key={workflow.id} className={`bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border ${
+               workflow.active ? 'border-purple-500/30' : 'border-gray-700/50'
+             }`}>
+               <div className="flex items-center justify-between mb-4">
+                 <h3 className="text-lg font-semibold text-white">{workflow.name}</h3>
+                 <div className="flex items-center space-x-3">
+                   <span className="text-sm text-gray-400">{workflow.executions} runs</span>
+                   <button 
+                     onClick={() => toggleWorkflowStatus(workflow.id)}
+                     className={`w-12 h-6 rounded-full relative transition-colors ${
+                       workflow.active ? 'bg-green-500' : 'bg-gray-600'
+                     }`}
+                   >
+                     <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
+                       workflow.active ? 'translate-x-6' : 'translate-x-1'
+                     }`} />
+                   </button>
+                 </div>
+               </div>
+               
+               <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
+                 <div className="flex-1 bg-gray-800/50 rounded-lg p-3">
+                   <div className="text-xs text-gray-400 mb-1">TRIGGER</div>
+                   <div className="flex items-center space-x-2">
+                     {workflow.trigger.service === "Discord" && <MessageSquare className="w-4 h-4 text-indigo-400" />}
+                     {workflow.trigger.service === "Ourverse" && <Bot className="w-4 h-4 text-purple-400" />}
+                     {workflow.trigger.service === "Schedule" && <Calendar className="w-4 h-4 text-blue-400" />}
+                     <div className="text-white">{workflow.trigger.service}</div>
+                   </div>
+                   <div className="text-sm text-gray-400">{workflow.trigger.event}</div>
+                 </div>
+                 
+                 <ArrowRight className="hidden md:block w-5 h-5 text-purple-400 flex-shrink-0" />
+                 
+                 <div className="flex-1 bg-gray-800/50 rounded-lg p-3">
+                   <div className="text-xs text-gray-400 mb-1">ACTION</div>
+                   <div className="flex items-center space-x-2">
+                     {workflow.action.service === "Profile" && <User className="w-4 h-4 text-green-400" />}
+                     {workflow.action.service === "Slack" && <Hash className="w-4 h-4 text-purple-400" />}
+                     {workflow.action.service === "OpenAI" && <Bot className="w-4 h-4 text-green-400" />}
+                     <div className="text-white">{workflow.action.service}</div>
+                   </div>
+                   <div className="text-sm text-gray-400">{workflow.action.type}</div>
+                 </div>
+               </div>
+               
+               {/* Workflow Actions */}
+               <div className="flex justify-end mt-4 pt-4 border-t border-gray-700/50">
+                 <button 
+                   onClick={() => editWorkflow(workflow)}
+                   className="px-3 py-1 text-sm bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+                 >
+                   Edit
+                 </button>
+               </div>
+             </div>
+           ))}
+         </div>
 
-      {/* Create Workflow Button */}
-      <div className="flex justify-center">
-        <button 
-          onClick={() => setShowWorkflowModal(true)}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all flex items-center space-x-2"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Create New Workflow</span>
+         {/* Create Workflow Button */}
+         <div className="flex justify-center">
+           <button 
+             onClick={createNewWorkflow}
+             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all flex items-center space-x-2"
+           >
+             <Plus className="w-5 h-5" />
+             <span>Create New Workflow</span>
+           </button>
+         </div>
+         
+         {/* Workflow Editor Modal */}
+         {showWorkflowEditor && editingWorkflow && (
+           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+             <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-2xl">
+               <div className="flex justify-between items-center mb-6">
+                 <h3 className="text-xl font-bold text-white">
+                   {editingWorkflow.executions > 0 ? 'Edit' : 'Create'} Workflow
+                 </h3>
+                 <button 
+                   onClick={() => setShowWorkflowEditor(false)}
+                   className="text-gray-400 hover:text-white"
+                 >
+                   <X className="w-5 h-5" />
+                 </button>
+               </div>
+               
+               <div className="space-y-6">
+                 {/* Workflow Name */}
+                 <div>
+                   <label className="block text-sm text-gray-300 mb-2">Workflow Name</label>
+                   <input 
+                     type="text" 
+                     value={editingWorkflow.name} 
+                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white"
+                   />
+                 </div>
+                 
+                 {/* Trigger Configuration */}
+                 <div>
+                   <h4 className="text-md font-semibold text-white mb-3">Trigger (When this happens...)</h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">Service</label>
+                       <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                         <option value="Discord">Discord</option>
+                         <option value="Slack">Slack</option>
+                         <option value="Ourverse">Ourverse</option>
+                         <option value="Schedule">Schedule</option>
+                         <option value="OpenAI">OpenAI</option>
+                       </select>
+                     </div>
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">Event</label>
+                       <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                         <option value="Message with #status">Message with #status</option>
+                         <option value="Any message">Any message</option>
+                         <option value="Goal completed">Goal completed</option>
+                         <option value="Daily at 9am">Daily at 9am</option>
+                         <option value="Profile viewed">Profile viewed</option>
+                       </select>
+                     </div>
+                   </div>
+                 </div>
+                 
+                 {/* Action Configuration */}
+                 <div>
+                   <h4 className="text-md font-semibold text-white mb-3">Action (Do this...)</h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">Service</label>
+                       <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                         <option value="Profile">Profile</option>
+                         <option value="Slack">Slack</option>
+                         <option value="Discord">Discord</option>
+                         <option value="OpenAI">OpenAI</option>
+                         <option value="Notion">Notion</option>
+                       </select>
+                     </div>
+                     <div>
+                       <label className="block text-sm text-gray-300 mb-2">Action Type</label>
+                       <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white">
+                         <option value="Update status">Update status</option>
+                         <option value="Post message">Post message</option>
+                         <option value="Generate summary">Generate summary</option>
+                         <option value="Create note">Create note</option>
+                       </select>
+                     </div>
+                   </div>
+                   
+                   {/* Action Details */}
+                   <div className="mt-4">
+                     <label className="block text-sm text-gray-300 mb-2">Action Details</label>
+                     <textarea 
+                       className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white h-24"
+                       placeholder="Enter message template, status format, or other details..."
+                     ></textarea>
+                     <p className="text-xs text-gray-500 mt-1">
+                       Use {{variables}} to include dynamic content from the trigger
+                     </p>
+                   </div>
+                 </div>
+                 
+                 <div className="flex justify-end space-x-3 mt-6">
+                   <button 
+                     onClick={() => setShowWorkflowEditor(false)}
+                     className="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700"
+                   >
+                     Cancel
+                   </button>
+                   <button 
+                     className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                   >
+                     Save Workflow
+                   </button>
+                 </div>
+               </div>
+             </div>
+           </div>
+         )}
+       </div>
+       );
+     };          <span>Create New Workflow</span>
         </button>
       </div>
     </div>
