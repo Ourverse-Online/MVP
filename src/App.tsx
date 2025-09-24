@@ -5,8 +5,26 @@ import {
   Eye, MapPin,
   Award, Activity, Flame, Brain, Lightbulb,
   Wand2, Twitter,
-  CheckCircle, Loader2, ArrowRight, Database, Hash
+  CheckCircle, Loader2, ArrowRight, Database, Hash,
+  TrendingUp, Star, Trophy, BookOpen, Sparkles
 } from 'lucide-react';
+import { 
+  RadarChart, 
+  PolarGrid, 
+  PolarAngleAxis, 
+  PolarRadiusAxis, 
+  Radar, 
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar
+} from 'recharts';
 
 const OurverseMVP = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -363,6 +381,63 @@ const OurverseMVP = () => {
     return colorMap[color] || colorMap.purple;
   };
 
+  // Enhanced Badge Data for Charts
+  const badgeChartData = Object.entries(userBadges).map(([skill, value]) => ({
+    skill,
+    value,
+    maxValue: 10,
+    category: Object.entries(badgeCategories).find(([, cat]) => 
+      cat.subcategories.includes(skill)
+    )?.[1]?.name || 'Unknown'
+  }));
+
+  const overallBadgeStats = {
+    totalPoints: Object.values(userBadges).reduce((sum, val) => sum + val, 0),
+    maxPoints: 80,
+    strongestAreas: Object.entries(userBadges)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([skill, value]) => ({ skill, value })),
+    improvementAreas: Object.entries(userBadges)
+      .sort(([,a], [,b]) => a - b)
+      .slice(0, 3)
+      .map(([skill, value]) => ({ skill, value })),
+    averageScore: Object.values(userBadges).reduce((sum, val) => sum + val, 0) / 8
+  };
+
+  // Badge recommendations based on current data
+  const getBadgeRecommendations = () => {
+    const recommendations = [];
+    
+    // Find lowest scoring categories
+    Object.entries(badgeCategories).forEach(([letter, category]) => {
+      const categoryAvg = category.subcategories.reduce((sum, subcat) => 
+        sum + (userBadges[subcat] || 0), 0) / category.subcategories.length;
+      
+      if (categoryAvg < 6) {
+        recommendations.push({
+          category: category.name,
+          letter,
+          issue: `Average score of ${categoryAvg.toFixed(1)}/10`,
+          suggestion: `Focus on improving ${category.subcategories.join(' and ')} through ${getRecommendationText(category.name)}`,
+          color: category.color
+        });
+      }
+    });
+    
+    return recommendations;
+  };
+
+  const getRecommendationText = (categoryName: string) => {
+    const suggestions = {
+      'Grittiness': 'setting challenging goals and persisting through obstacles',
+      'Omnipotence': 'building confidence and expanding knowledge',
+      'Liveliness': 'engaging more with community and practicing communication',
+      'Devotion': 'developing empathy and building trust with others'
+    };
+    return suggestions[categoryName] || 'focused practice and reflection';
+  };
+
   // Main Profile View
   const ProfileView = () => (
     <div className="space-y-6">
@@ -651,75 +726,264 @@ const OurverseMVP = () => {
     </div>
   );
 
-  // Badge Globe View
-  const BadgeGlobeView = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">Badge Globe Progress</h2>
-        <p className="text-purple-200">Complete all GOLD categories to achieve legendary status</p>
-        <div className="mt-4">
-          <div className="text-4xl font-bold text-white">
-            {Object.values(userBadges).reduce((sum, val) => sum + val, 0)}/80
-          </div>
-          <div className="text-sm text-gray-400">Total Badges Earned</div>
+  // Enhanced Badge Globe View with Spider Chart
+  const BadgeGlobeView = () => {
+    const recommendations = getBadgeRecommendations();
+    
+    return (
+      <div className="space-y-8">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <h2 className="text-4xl font-bold text-white mb-3 flex items-center justify-center">
+            <Sparkles className="w-8 h-8 mr-3 text-purple-400" />
+            Badge Globe Analytics
+          </h2>
+          <p className="text-purple-200 text-lg">Master the GOLD framework to unlock your full potential</p>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Object.entries(badgeCategories).map(([letter, category]) => {
-          const categoryTotal = category.subcategories.reduce((sum, subcat) => sum + (userBadges[subcat] || 0), 0);
-          const categoryMax = category.subcategories.length * 10;
-          const categoryPercent = Math.round((categoryTotal / categoryMax) * 100);
-          const colors = getBadgeColorClasses(category.color);
+        {/* Quick Stats Dashboard */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-xl p-4 text-center border border-purple-500/30">
+            <div className="text-3xl font-bold text-white">{overallBadgeStats.totalPoints}</div>
+            <div className="text-sm text-purple-200">Total Points</div>
+            <div className="text-xs text-gray-400">/ {overallBadgeStats.maxPoints} max</div>
+          </div>
+          <div className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 rounded-xl p-4 text-center border border-green-500/30">
+            <div className="text-3xl font-bold text-white">{overallBadgeStats.averageScore.toFixed(1)}</div>
+            <div className="text-sm text-green-200">Average Score</div>
+            <div className="text-xs text-gray-400">/ 10.0 max</div>
+          </div>
+          <div className="bg-gradient-to-br from-yellow-900/50 to-orange-900/50 rounded-xl p-4 text-center border border-yellow-500/30">
+            <div className="text-3xl font-bold text-white">{Math.round((overallBadgeStats.totalPoints / overallBadgeStats.maxPoints) * 100)}%</div>
+            <div className="text-sm text-yellow-200">Overall Progress</div>
+            <div className="text-xs text-gray-400">completion</div>
+          </div>
+          <div className="bg-gradient-to-br from-red-900/50 to-pink-900/50 rounded-xl p-4 text-center border border-red-500/30">
+            <div className="text-3xl font-bold text-white">{Object.keys(badgeCategories).length}</div>
+            <div className="text-sm text-red-200">Active Categories</div>
+            <div className="text-xs text-gray-400">in GOLD system</div>
+          </div>
+        </div>
 
-          return (
-            <div 
-              key={letter}
-              className="bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all cursor-pointer"
-              onClick={() => setSelectedBadgeCategory({letter, category})}
-            >
-              <div className="text-center mb-4">
-                <div className={`w-20 h-20 mx-auto rounded-full ${colors.bg} border-2 ${colors.border} flex items-center justify-center mb-3`}>
-                  <span className={`text-3xl font-bold ${colors.text}`}>{letter}</span>
-                </div>
-                <h3 className="text-xl font-bold text-white">{category.name}</h3>
-                <p className="text-sm text-gray-400 mt-2">{category.description}</p>
-              </div>
-
-              <div className="space-y-4">
-                {category.subcategories.map(subcat => {
-                  const level = userBadges[subcat] || 0;
-                  return (
-                    <div key={subcat} className="bg-gray-800/50 rounded-lg p-3">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-white font-medium">{subcat}</span>
-                        <span className="text-sm text-gray-400">{level}/10</span>
+        {/* Spider Chart Section */}
+        <div className="bg-gray-900/50 rounded-2xl p-8 backdrop-blur-sm border border-gray-700/50">
+          <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <Target className="w-6 h-6 mr-3 text-blue-400" />
+            Skills Radar Analysis
+          </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <ResponsiveContainer width="100%" height={400}>
+                <RadarChart data={badgeChartData}>
+                  <PolarGrid gridType="polygon" stroke="#374151" />
+                  <PolarAngleAxis 
+                    dataKey="skill" 
+                    tick={{ fill: '#D1D5DB', fontSize: 12 }}
+                    className="text-xs"
+                  />
+                  <PolarRadiusAxis 
+                    angle={90} 
+                    domain={[0, 10]} 
+                    tick={{ fill: '#9CA3AF', fontSize: 10 }}
+                  />
+                  <Radar
+                    name="Current Level"
+                    dataKey="value"
+                    stroke="#8B5CF6"
+                    fill="#8B5CF6"
+                    fillOpacity={0.3}
+                    strokeWidth={2}
+                  />
+                  <Radar
+                    name="Max Potential"
+                    dataKey="maxValue"
+                    stroke="#374151"
+                    fill="transparent"
+                    strokeWidth={1}
+                    strokeDasharray="5 5"
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-lg font-bold text-white mb-4 flex items-center">
+                  <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
+                  Strongest Areas
+                </h4>
+                <div className="space-y-3">
+                  {overallBadgeStats.strongestAreas.map((area, index) => (
+                    <div key={area.skill} className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                      <div className="flex items-center">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3">
+                          {index + 1}
+                        </div>
+                        <span className="text-white font-medium">{area.skill}</span>
                       </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div 
-                          className={`${colors.progress} h-2 rounded-full transition-all duration-500`}
-                          style={{ width: `${(level / 10) * 100}%` }}
-                        />
-                      </div>
+                      <span className="text-green-400 font-bold">{area.value}/10</span>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-700">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">Progress</span>
-                  <span className={`text-lg font-bold ${colors.text}`}>
-                    {categoryPercent}%
-                  </span>
+              <div>
+                <h4 className="text-lg font-bold text-white mb-4 flex items-center">
+                  <BookOpen className="w-5 h-5 mr-2 text-orange-400" />
+                  Growth Opportunities
+                </h4>
+                <div className="space-y-3">
+                  {overallBadgeStats.improvementAreas.map((area, index) => (
+                    <div key={area.skill} className="flex items-center justify-between p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                      <div className="flex items-center">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3">
+                          {index + 1}
+                        </div>
+                        <span className="text-white font-medium">{area.skill}</span>
+                      </div>
+                      <span className="text-orange-400 font-bold">{area.value}/10</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          );
-        })}
+          </div>
+        </div>
+
+        {/* Smart Recommendations */}
+        {recommendations.length > 0 && (
+          <div className="bg-gray-900/50 rounded-2xl p-8 backdrop-blur-sm border border-gray-700/50">
+            <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <Brain className="w-6 h-6 mr-3 text-purple-400" />
+              AI-Powered Recommendations
+            </h3>
+            <div className="space-y-4">
+              {recommendations.map((rec, index) => {
+                const colors = getBadgeColorClasses(rec.color);
+                return (
+                  <div key={index} className={`p-6 rounded-xl border ${colors.bg} ${colors.border}`}>
+                    <div className="flex items-start space-x-4">
+                      <div className={`w-12 h-12 rounded-full ${colors.bg} border-2 ${colors.border} flex items-center justify-center`}>
+                        <span className={`text-xl font-bold ${colors.text}`}>{rec.letter}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className={`text-lg font-bold ${colors.text} mb-2`}>{rec.category} Improvement</h4>
+                        <p className="text-gray-300 mb-3">{rec.issue}</p>
+                        <p className="text-white bg-gray-800/50 p-3 rounded-lg">
+                          💡 <strong>Suggestion:</strong> {rec.suggestion}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Interactive GOLD Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Object.entries(badgeCategories).map(([letter, category]) => {
+            const categoryTotal = category.subcategories.reduce((sum, subcat) => sum + ((userBadges as any)[subcat] || 0), 0);
+            const categoryMax = category.subcategories.length * 10;
+            const categoryPercent = Math.round((categoryTotal / categoryMax) * 100);
+            const colors = getBadgeColorClasses(category.color);
+
+            return (
+              <div 
+                key={letter}
+                className="bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all cursor-pointer transform hover:scale-105"
+                onClick={() => setSelectedBadgeCategory({letter, category})}
+              >
+                <div className="text-center mb-4">
+                  <div className={`w-20 h-20 mx-auto rounded-full ${colors.bg} border-2 ${colors.border} flex items-center justify-center mb-3 relative`}>
+                    <span className={`text-3xl font-bold ${colors.text}`}>{letter}</span>
+                    {categoryPercent >= 80 && (
+                      <div className="absolute -top-2 -right-2">
+                        <Trophy className="w-6 h-6 text-yellow-400" />
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-white">{category.name}</h3>
+                  <p className="text-sm text-gray-400 mt-2">{category.description}</p>
+                </div>
+
+                <div className="space-y-3">
+                  {category.subcategories.map(subcat => {
+                    const level = (userBadges as any)[subcat] || 0;
+                    return (
+                      <div key={subcat} className="bg-gray-800/50 rounded-lg p-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-white font-medium">{subcat}</span>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-400">{level}/10</span>
+                            {level >= 8 && <Star className="w-4 h-4 text-yellow-400" />}
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className={`${colors.progress} h-2 rounded-full transition-all duration-500`}
+                            style={{ width: `${(level / 10) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Category Progress</span>
+                    <span className={`text-sm font-bold ${colors.text}`}>{categoryPercent}%</span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-3 mt-2">
+                    <div 
+                      className={`${colors.progress} h-3 rounded-full transition-all duration-700`}
+                      style={{ width: `${categoryPercent}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Achievement Badges */}
+        <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-2xl p-8 border border-purple-500/30">
+          <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <Award className="w-6 h-6 mr-3 text-yellow-400" />
+            Achievement Milestones
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className={`p-6 rounded-xl border-2 text-center ${overallBadgeStats.totalPoints >= 20 ? 'border-green-500 bg-green-500/10' : 'border-gray-600 bg-gray-800/50'}`}>
+              <Trophy className={`w-12 h-12 mx-auto mb-3 ${overallBadgeStats.totalPoints >= 20 ? 'text-green-400' : 'text-gray-500'}`} />
+              <h4 className="text-lg font-bold text-white mb-2">Explorer</h4>
+              <p className="text-sm text-gray-400">Earn 20+ badge points</p>
+              <p className={`text-xs mt-2 ${overallBadgeStats.totalPoints >= 20 ? 'text-green-400' : 'text-gray-500'}`}>
+                {overallBadgeStats.totalPoints >= 20 ? '✅ Unlocked!' : `${20 - overallBadgeStats.totalPoints} points to go`}
+              </p>
+            </div>
+            <div className={`p-6 rounded-xl border-2 text-center ${overallBadgeStats.totalPoints >= 50 ? 'border-blue-500 bg-blue-500/10' : 'border-gray-600 bg-gray-800/50'}`}>
+              <Star className={`w-12 h-12 mx-auto mb-3 ${overallBadgeStats.totalPoints >= 50 ? 'text-blue-400' : 'text-gray-500'}`} />
+              <h4 className="text-lg font-bold text-white mb-2">Master</h4>
+              <p className="text-sm text-gray-400">Earn 50+ badge points</p>
+              <p className={`text-xs mt-2 ${overallBadgeStats.totalPoints >= 50 ? 'text-blue-400' : 'text-gray-500'}`}>
+                {overallBadgeStats.totalPoints >= 50 ? '✅ Unlocked!' : `${50 - overallBadgeStats.totalPoints} points to go`}
+              </p>
+            </div>
+            <div className={`p-6 rounded-xl border-2 text-center ${overallBadgeStats.totalPoints >= 75 ? 'border-purple-500 bg-purple-500/10' : 'border-gray-600 bg-gray-800/50'}`}>
+              <Sparkles className={`w-12 h-12 mx-auto mb-3 ${overallBadgeStats.totalPoints >= 75 ? 'text-purple-400' : 'text-gray-500'}`} />
+              <h4 className="text-lg font-bold text-white mb-2">Legend</h4>
+              <p className="text-sm text-gray-400">Earn 75+ badge points</p>
+              <p className={`text-xs mt-2 ${overallBadgeStats.totalPoints >= 75 ? 'text-purple-400' : 'text-gray-500'}`}>
+                {overallBadgeStats.totalPoints >= 75 ? '✅ Unlocked!' : `${75 - overallBadgeStats.totalPoints} points to go`}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Goals View
   const GoalsView = () => (
